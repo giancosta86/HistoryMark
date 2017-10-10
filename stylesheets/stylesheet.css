@@ -1,0 +1,146 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  font-family: "Arial", sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  background: radial-gradient(#e09898 0%, #983131 100%);
+}
+
+a,
+a:visited {
+  color: #490606;
+}
+
+
+
+#logoBox {
+  margin-top: 1.5em;
+  text-align: center;
+  margin-bottom: -0.5em;
+}
+
+
+#titleBox {
+  text-align: center;
+}
+
+
+#title {
+  font-size: 4em;
+  margin-top: 0.1em;
+  margin-bottom: 0;
+  color: #490606;
+}
+
+
+
+#subtitle {
+  font-size: 1.5em;
+  text-align: center;
+  font-style: italic;
+  color: #490606;
+  margin-bottom: 2.2em;
+}
+
+
+.screenshotBox {
+  text-align: center;
+}
+
+#mainScreenshot {
+  width: 80%;
+}
+
+.buttons {
+  margin-bottom: 1em;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 4em;
+}
+
+
+.button {
+  margin-top: 1.7em;
+  padding: 0.9em;
+  border-radius: 1em;
+  font-weight: bold;
+  margin-right: 1.3em;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  text-decoration: none;
+
+  background: radial-gradient(#a63333 0%, #660303 100%);
+}
+
+.button:hover {
+  opacity: 0.85;
+}
+
+
+a.button,
+a.button:visited {
+  color: white;
+}
+
+
+
+.moonDeployButton {
+  display: none;
+}
+
+
+.zipButton {
+  display: none;
+}
+
+
+#introBlock {
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 3em;
+  font-size: 1.4em;
+}
+
+
+#facebookBox {
+  text-align: center;
+  margin-top: 3em;
+}
+
+
+#facebookButton {
+  padding: 1em;
+  background: #0044a9;
+  color: #e1edff;
+  font-size: 1em;
+}
+
+#facebookButton:hover {
+  background: #0650bf;
+}
+
+footer {
+  text-align: center;
+}
+
+
+footer hr {
+  margin-top: 3.5em;
+  margin-bottom: 1em;
+}
+
+
+footer a {
+  text-decoration: none;
+}
+
+
+li {
+  padding: 0.6em 0;
+}

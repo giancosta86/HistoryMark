@@ -9,7 +9,7 @@
 **HistoryMark** is a Java application enabling users to *pin* historical events onto a world-wide, interactive geographic map.
 
 
-![Example map](https://github.com/giancosta86/HystoryMark/raw/master/screenshots/example.jpg "Interactive map shown by the app")
+![Example map](https://github.com/giancosta86/HistoryMark/blob/master/screenshots/example.jpg "Interactive map shown by the app")
 
 
 HistoryMark employs the [Atlas](https://github.com/giancosta86/HystoryMark) library - which, in turn, is based on [JXMapViewer 2](https://github.com/msteiger/jxmapviewer2) and [OpenStreetMap](https://openstreetmap.org/).

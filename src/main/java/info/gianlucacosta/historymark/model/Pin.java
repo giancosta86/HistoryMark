@@ -23,6 +23,7 @@ package info.gianlucacosta.historymark.model;
 import info.gianlucacosta.historymark.util.HistoryDateFormat;
 import org.jxmapviewer.viewer.GeoPosition;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -30,6 +31,7 @@ import javax.persistence.UniqueConstraint;
 import java.awt.Color;
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -53,6 +55,9 @@ public class Pin implements info.gianlucacosta.atlas.pin.CommonPin {
 
     private String encodedColor;
 
+    @Column(length = 4096)
+    private String description;
+
 
     private Pin() {
     }
@@ -62,14 +67,16 @@ public class Pin implements info.gianlucacosta.atlas.pin.CommonPin {
             String title,
             Location location,
             LocalDate date,
-            String encodedColor
+            String encodedColor,
+            Optional<String> descriptionOption
     ) {
         this(
                 UUID.randomUUID(),
                 title,
                 location,
                 date,
-                encodedColor
+                encodedColor,
+                descriptionOption
         );
     }
 
@@ -79,7 +86,8 @@ public class Pin implements info.gianlucacosta.atlas.pin.CommonPin {
             String title,
             Location location,
             LocalDate date,
-            String encodedColor
+            String encodedColor,
+            Optional<String> descriptionOption
     ) {
         this.id = id;
 
@@ -95,6 +103,19 @@ public class Pin implements info.gianlucacosta.atlas.pin.CommonPin {
         this.date = date;
 
         this.encodedColor = encodedColor;
+
+        this.description =
+                descriptionOption
+                        .flatMap(description -> {
+                            String trimmedDescription =
+                                    description.trim();
+
+                            return trimmedDescription.isEmpty() ?
+                                    Optional.empty()
+                                    :
+                                    Optional.of(trimmedDescription);
+                        })
+                        .orElse(null);
     }
 
 
@@ -118,6 +139,10 @@ public class Pin implements info.gianlucacosta.atlas.pin.CommonPin {
         return encodedColor;
     }
 
+    public Optional<String> getDescription() {
+        return Optional.ofNullable(description);
+    }
+
     @Override
     public GeoPosition getPosition() {
         return location.toPosition();
@@ -130,12 +155,24 @@ public class Pin implements info.gianlucacosta.atlas.pin.CommonPin {
 
     @Override
     public String getLabelText() {
+        String descriptionString =
+                getDescription()
+                        .map(description ->
+                                String.format(
+                                        "<br /><br />%s",
+                                        description.replaceAll("\n", "<br />")
+                                )
+                        )
+                        .orElse("");
+
         return String.format(
-                "%s (%s)",
+                "<html><font size='6'><b>%s</b> (%s)</font><font size='4'><i>%s</i></font></html>",
                 title,
-                HistoryDateFormat.formatDate(date)
+                HistoryDateFormat.formatDate(date),
+                descriptionString
         );
     }
+
 
     @Override
     public boolean equals(Object o) {
@@ -146,12 +183,14 @@ public class Pin implements info.gianlucacosta.atlas.pin.CommonPin {
                 Objects.equals(title, pin.title) &&
                 Objects.equals(location, pin.location) &&
                 Objects.equals(date, pin.date) &&
-                Objects.equals(encodedColor, pin.encodedColor);
+                Objects.equals(encodedColor, pin.encodedColor) &&
+                Objects.equals(description, pin.description);
     }
+
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, location, date, encodedColor);
+        return Objects.hash(id, title, location, date, encodedColor, description);
     }
 
 
@@ -163,6 +202,7 @@ public class Pin implements info.gianlucacosta.atlas.pin.CommonPin {
                 ", location=" + location +
                 ", date=" + date +
                 ", encodedColor='" + encodedColor + '\'' +
+                ", description='" + description + '\'' +
                 '}';
     }
 }

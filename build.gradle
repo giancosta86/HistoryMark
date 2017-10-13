@@ -44,7 +44,7 @@ apply plugin: 'info.gianlucacosta.aurora'
 
 group 'info.gianlucacosta.historymark'
 archivesBaseName = 'historymark'
-version '1.0'
+version '1.1'
 
 
 sourceCompatibility = 1.8
@@ -85,6 +85,7 @@ moonLicense {
 
 dependencies {
     compile 'info.gianlucacosta.atlas:atlas:1.0'
+    compile 'info.gianlucacosta.zephyros:zephyros-core:1.1'
     compile 'info.gianlucacosta.zephyros:zephyros-hibernate:1.0'
 
     compile 'org.hsqldb:hsqldb:2.4.0'

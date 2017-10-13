@@ -27,6 +27,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public interface TestObjects {
@@ -58,7 +59,8 @@ public interface TestObjects {
                     "Alpha pin",
                     new Location(6, 14),
                     LocalDate.of(150, 2, 28),
-                    Colors.encode(Color.BLUE)
+                    Colors.encode(Color.BLUE),
+                    Optional.of("Alpha description")
             );
 
 
@@ -67,7 +69,8 @@ public interface TestObjects {
                     "Beta pin",
                     new Location(87.4, 11.9),
                     LocalDate.of(432, 4, 5),
-                    Colors.encode(Color.GREEN)
+                    Colors.encode(Color.GREEN),
+                    Optional.of("Beta description")
             );
 
 

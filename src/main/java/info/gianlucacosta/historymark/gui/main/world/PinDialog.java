@@ -30,9 +30,12 @@ import info.gianlucacosta.zephyros.swing.components.PlainLocalDatePicker;
 import info.gianlucacosta.zephyros.swing.graphics.Colors;
 
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.util.Optional;
 import java.util.UUID;
 
 class PinDialog extends HistoryObjectDialog<Pin> {
@@ -45,6 +48,7 @@ class PinDialog extends HistoryObjectDialog<Pin> {
     private PlainLocalDatePicker datePicker;
     private LocationEditor locationEditor;
     private ColorPicker colorPicker;
+    private JTextArea descriptionArea;
 
 
     public PinDialog(Location pinLocation) {
@@ -112,6 +116,26 @@ class PinDialog extends HistoryObjectDialog<Pin> {
         contentPanel.addInput(colorPicker);
 
 
+        contentPanel.addLabel("Description:");
+
+        descriptionArea =
+                new JTextArea(10, 20) {
+                    {
+                        setLineWrap(true);
+                    }
+                };
+
+        contentPanel.addInput(
+                new JScrollPane(
+                        descriptionArea
+                ),
+
+                constraints -> {
+                    constraints.weighty = 1;
+                }
+        );
+
+
         return contentPanel;
     }
 
@@ -135,7 +159,14 @@ class PinDialog extends HistoryObjectDialog<Pin> {
                         initialValue.getEncodedColor()
                 )
         );
+
+        descriptionArea.setText(
+                initialValue
+                        .getDescription()
+                        .orElse("")
+        );
     }
+
 
     @Override
     protected Pin readFromGuiFields() {
@@ -147,7 +178,9 @@ class PinDialog extends HistoryObjectDialog<Pin> {
                 titleField.getText(),
                 locationEditor.getLocationValue(),
                 datePicker.getDate(),
-                Colors.encode(colorPicker.getColor())
+                Colors.encode(colorPicker.getColor()),
+
+                Optional.of(descriptionArea.getText())
         );
     }
 }

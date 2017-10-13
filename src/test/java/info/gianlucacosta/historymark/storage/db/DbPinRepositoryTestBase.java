@@ -30,6 +30,7 @@ import org.junit.Test;
 
 import java.awt.Color;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 
 import static info.gianlucacosta.historymark.model.TestObjects.alphaPin;
@@ -108,7 +109,8 @@ public abstract class DbPinRepositoryTestBase<T extends PinRepository> extends D
                         "Edited pin",
                         new Location(90, 90),
                         LocalDate.of(alphaPin.getDate().getYear() + 100, 1, 1),
-                        Colors.encode(Color.RED)
+                        Colors.encode(Color.RED),
+                        Optional.of("Brand-new description")
                 );
 
         pinRepository.save(newAlphaPin);
@@ -143,7 +145,8 @@ public abstract class DbPinRepositoryTestBase<T extends PinRepository> extends D
                         alphaPin.getTitle(),
                         alphaPin.getLocation(),
                         alphaPin.getDate(),
-                        alphaPin.getEncodedColor()
+                        alphaPin.getEncodedColor(),
+                        alphaPin.getDescription()
                 );
 
         pinRepository.save(alphaPin);

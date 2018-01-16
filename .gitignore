@@ -1,8 +1,1 @@
-/.gradle/
-/build/
-/classes/
-/.idea/
-/out/
-/*.iml
-
-/src/generated/
+/_site/

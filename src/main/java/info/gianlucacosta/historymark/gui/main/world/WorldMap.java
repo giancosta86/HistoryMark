@@ -22,131 +22,109 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 public class WorldMap extends OpenStreetMapViewer {
-    private static final GeoPosition START_POSITION =
-            new GeoPosition(49, 9);
+        private static final GeoPosition START_POSITION = new GeoPosition(49, 9);
 
-    private static final int START_OPEN_STREET_MAP_ZOOM = 5;
+        private static final int START_OPEN_STREET_MAP_ZOOM = 5;
 
-    private final Consumer<Pin> onInteractiveEditPinRequest;
-    private final Consumer<Pin> onInteractiveRemovePinRequest;
-    private final PinLayer<Pin> pinLayer;
+        private final Consumer<Pin> onInteractiveEditPinRequest;
+        private final Consumer<Pin> onInteractiveRemovePinRequest;
+        private final PinLayer<Pin> pinLayer;
 
+        public WorldMap(
+                        WorldTileFactory worldTileFactory,
+                        Consumer<GeoPosition> onMouseGeoPositionChanged,
+                        Consumer<Pin> onInteractiveAddPinRequest,
+                        Consumer<Pin> onInteractiveEditPinRequest,
+                        Consumer<Pin> onInteractiveRemovePinRequest) {
+                super();
 
-    public WorldMap(
-            WorldTileFactory worldTileFactory,
-            Consumer<GeoPosition> onMouseGeoPositionChanged,
-            Consumer<Pin> onInteractiveAddPinRequest,
-            Consumer<Pin> onInteractiveEditPinRequest,
-            Consumer<Pin> onInteractiveRemovePinRequest
-    ) {
-        super(worldTileFactory);
+                this.onInteractiveEditPinRequest = onInteractiveEditPinRequest;
+                this.onInteractiveRemovePinRequest = onInteractiveRemovePinRequest;
 
-        this.onInteractiveEditPinRequest = onInteractiveEditPinRequest;
-        this.onInteractiveRemovePinRequest = onInteractiveRemovePinRequest;
+                setAddressLocation(START_POSITION);
+                setOpenStreetMapZoom(START_OPEN_STREET_MAP_ZOOM);
 
+                MouseInputListener panMouseInputListener = new PanMouseInputListener(this);
 
-        setAddressLocation(START_POSITION);
-        setOpenStreetMapZoom(START_OPEN_STREET_MAP_ZOOM);
+                addMouseListener(panMouseInputListener);
+                addMouseMotionListener(panMouseInputListener);
 
-        MouseInputListener panMouseInputListener =
-                new PanMouseInputListener(this);
+                addMouseWheelListener(
+                                new ZoomMouseWheelListenerCenter(this));
 
-        addMouseListener(panMouseInputListener);
-        addMouseMotionListener(panMouseInputListener);
+                setFocusable(true);
 
-        addMouseWheelListener(
-                new ZoomMouseWheelListenerCenter(this)
-        );
+                addKeyListener(
+                                new PanKeyListener(this));
 
-        setFocusable(true);
+                addMouseMotionListener(new MouseMotionAdapter() {
+                        @Override
+                        public void mouseMoved(MouseEvent e) {
+                                GeoPosition mouseGeoPosition = convertPointToGeoPosition(e.getPoint());
 
-        addKeyListener(
-                new PanKeyListener(this)
-        );
+                                onMouseGeoPositionChanged.accept(mouseGeoPosition);
+                        }
+                });
 
+                addMouseListener(new MouseAdapter() {
+                        @Override
+                        public void mouseClicked(MouseEvent event) {
+                                requestFocus();
 
-        addMouseMotionListener(new MouseMotionAdapter() {
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                GeoPosition mouseGeoPosition =
-                        convertPointToGeoPosition(e.getPoint());
+                                if (SwingUtilities.isLeftMouseButton(event) &&
+                                                event.getClickCount() == 2) {
+                                        GeoPosition mouseGeoPosition = convertPointToGeoPosition(event.getPoint());
 
-                onMouseGeoPositionChanged.accept(mouseGeoPosition);
-            }
-        });
+                                        PinDialog pinDialog = new PinDialog(
+                                                        new Location(
+                                                                        mouseGeoPosition));
 
+                                        Optional<Pin> newPinOption = pinDialog.show();
 
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent event) {
-                requestFocus();
+                                        newPinOption.ifPresent(onInteractiveAddPinRequest);
+                                }
+                        }
+                });
 
-                if (SwingUtilities.isLeftMouseButton(event) &&
-                        event.getClickCount() == 2) {
-                    GeoPosition mouseGeoPosition =
-                            convertPointToGeoPosition(event.getPoint());
-
-                    PinDialog pinDialog =
-                            new PinDialog(
-                                    new Location(
-                                            mouseGeoPosition
-                                    )
-                            );
-
-                    Optional<Pin> newPinOption =
-                            pinDialog.show();
-
-                    newPinOption.ifPresent(onInteractiveAddPinRequest);
-                }
-            }
-        });
-
-
-        pinLayer =
-                new PinLayer<>(
-                        this,
-                        this::createPinDrawing
+                pinLayer = new PinLayer<>(
+                                this,
+                                this::createPinDrawing
 
                 );
 
-        setOverlayPainter(pinLayer);
-    }
-
-
-    private PinDrawing<Pin> createPinDrawing(Pin pin) {
-        return new OvalPinDrawing<>(
-                pin,
-                new Dimension(24, 24),
-                this::handlePinDrawingClicked
-        );
-    }
-
-    private void handlePinDrawingClicked(Pin pin, MouseEvent event) {
-        if (event.getClickCount() == 1) {
-            if (SwingUtilities.isLeftMouseButton(event)) {
-                PinDialog pinDialog =
-                        new PinDialog(pin);
-
-                Optional<Pin> editedPinOption =
-                        pinDialog.show();
-
-                editedPinOption.ifPresent(onInteractiveEditPinRequest);
-            } else if (SwingUtilities.isRightMouseButton(event)) {
-                onInteractiveRemovePinRequest.accept(pin);
-            }
+                setOverlayPainter(pinLayer);
         }
-    }
 
+        private PinDrawing<Pin> createPinDrawing(Pin pin) {
+                return new OvalPinDrawing<>(
+                                pin,
+                                new Dimension(24, 24),
+                                this::handlePinDrawingClicked);
+        }
 
-    public void setPins(Collection<Pin> pins) {
-        pinLayer.setPins(pins);
-    }
+        private void handlePinDrawingClicked(Pin pin, MouseEvent event) {
+                if (event.getClickCount() == 1) {
+                        if (SwingUtilities.isLeftMouseButton(event)) {
+                                PinDialog pinDialog = new PinDialog(pin);
 
-    public void ensurePin(Pin pin) {
-        pinLayer.ensurePin(pin);
-    }
+                                Optional<Pin> editedPinOption = pinDialog.show();
 
-    public void removePin(Pin pin) {
-        pinLayer.removePin(pin);
-    }
+                                editedPinOption.ifPresent(onInteractiveEditPinRequest);
+                        } else if (SwingUtilities.isRightMouseButton(event)) {
+                                onInteractiveRemovePinRequest.accept(pin);
+                        }
+                }
+        }
+
+        public void setPins(Collection<Pin> pins) {
+                pinLayer.setPins(pins);
+        }
+
+        public void ensurePin(Pin pin) {
+                pinLayer.ensurePin(pin);
+        }
+
+        public void removePin(Pin pin) {
+                pinLayer.removePin(pin);
+        }
 }
